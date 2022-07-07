@@ -4,9 +4,13 @@
 
 static void *_heap = _end;
 
-int
-brk(void *p)
+void *
+sbrk(int n)
 {
-   _heap = p;
-   return 0;
+   void *p = _heap;
+   _heap += n;
+   return p;
 }
+
+void *
+malloc(int n) __attribute__ ((weak, alias ("sbrk")));

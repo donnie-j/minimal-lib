@@ -1,9 +1,9 @@
-
+#include <stdio.h>
 #include "lcd-drv.h"
 #include "font5x7.h"
 
 static int ffsl(long i) { return i ? __builtin_ctzl(i) + 1 : 0; }
-
+extern char *_strptr;
 void
 key_precharge()
 {
@@ -99,6 +99,38 @@ lcd_puts(const char *s)
   }
   for (;i<4;i++) v[i] = 0;
   lcd_data(*l);
+}
+
+int
+lcd_debug(int y, const char *m)
+{
+  int k;
+
+  lcd_loc(0,y); lcd_puts("                        ");
+  lcd_loc(0,y); lcd_puts("D:"); lcd_puts(m);
+  key_wait(1);
+  k = key();
+  lcd_loc(0,y); lcd_puts("  ");
+  key_wait(0);
+
+  return k;
+}
+#include <stdarg.h>
+void xvfprintf(void(*)(int), const char *, va_list);
+static char _ldbuf[64];
+int 
+ldprintf(int y, const char *fmt, ...)
+{
+        va_list arp;
+
+        _strptr = _ldbuf;          /* Enable destination for memory */
+        va_start(arp, fmt);
+        xvfprintf(0, fmt, arp);
+        va_end(arp);
+        *_strptr = 0;            /* Terminate output string */
+        _strptr = 0;             /* Disable destination for memory */
+
+        return lcd_debug(y, _ldbuf);
 }
 
 __attribute__ ((constructor))

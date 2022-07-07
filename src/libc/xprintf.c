@@ -33,7 +33,7 @@
 
 #include <stdarg.h>
 void (*xfunc_output)(int);	/* Pointer to the default output device */
-static char *strptr;		/* Pointer to the output memory (used by xsprintf) */
+char *_strptr;			/* Pointer to the output memory (used by xsprintf) */
 
 
 #if XF_USE_FP
@@ -165,7 +165,7 @@ static void ftoa (
 /*----------------------------------------------*/
 
 void xfputc (			/* Put a character to the specified device */
-	void(*func)(int),	/* Pointer to the output function (null:strptr) */
+	void(*func)(int),	/* Pointer to the output function (null:_strptr) */
 	int chr				/* Character to be output */
 )
 {
@@ -173,8 +173,8 @@ void xfputc (			/* Put a character to the specified device */
 
 	if (func) {
 		func(chr);		/* Write a character to the output device */
-	} else if (strptr) {
-		 *strptr++ = chr;	/* Write a character to the memory */
+	} else if (_strptr) {
+		 *_strptr++ = chr;	/* Write a character to the memory */
 	}
 }
 
@@ -231,7 +231,7 @@ void xputs (			/* Put a string to the default device */
     xprintf("%.4E", 123.45678);		"1.2346E+02"	<XF_USE_FP>
 */
 
-static void xvfprintf (
+void xvfprintf (
 	void(*func)(int),	/* Pointer to the output function */
 	const char*	fmt,	/* Pointer to the format string */
 	va_list arp			/* Pointer to arguments */
@@ -405,12 +405,12 @@ sprintf (			/* Put a formatted string to the memory */
 	va_list arp;
 
 
-	strptr = buff;		/* Enable destination for memory */
+	_strptr = buff;		/* Enable destination for memory */
 	va_start(arp, fmt);
 	xvfprintf(0, fmt, arp);
 	va_end(arp);
-	*strptr = 0;		/* Terminate output string */
-	strptr = 0;			/* Disable destination for memory */
+	*_strptr = 0;		/* Terminate output string */
+	_strptr = 0;			/* Disable destination for memory */
 
 	return 0; /* FIXME: length */
 }

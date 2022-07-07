@@ -1,7 +1,7 @@
 OBJS = main-lcd.o lcd-drv.o version.o
 
 LD_FILE = ../../ld/sh_bare.x
-LIBGCC = $(shell $(CC) -print-libgcc-file-name)
+LIBGCC = $(shell $(CC) -mj2 -print-libgcc-file-name)
 
 CC = sh2-elf-gcc
 LD = sh2-elf-ld
