@@ -1,5 +1,7 @@
 all:
 	make -C src 
+
+examples:
 	make -C examples/calc 
 
 clean:
