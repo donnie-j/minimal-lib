@@ -8,7 +8,7 @@ OBJS            = abs.o atof.o atol.o bcmp.o bcopy.o bzero.o ctype_.o \
                   memchr.o memcmp.o memcpy.o memset.o rand.o brk.o sbrk.o malloc.o \
                   sleep.o strcasecmp.o strcat.o strchr.o strcmp.o strcpy.o \
                   strdup.o strlen.o strncat.o strncmp.o strncpy.o strrchr.o \
-                  strstr.o strtok.o swab.o usleep.o xprintf.o
+                  strstr.o strtok.o swab.o usleep.o xprintf.o setjmp.o longjmp.o
 
 all:            ../../libc.a
 
