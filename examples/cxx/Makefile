@@ -1,4 +1,4 @@
-OBJS = main.o version.o
+OBJS = main.o led.o version.o
 
 LD_FILE = ../../ld/sh_bare.x
 LIBGCC = $(shell $(CC) -mj2 -print-libgcc-file-name)
@@ -7,7 +7,7 @@ CC       = sh2-elf-gcc
 CXX      = sh2-elf-gcc
 LD       = sh2-elf-ld
 CFLAGS   = -mj2 -Os -g -Wall -I../../include
-CXXFLAGS = -mj2 -Os -g -Wall -I../../include
+CXXFLAGS = -mj2 -Os -g -fno-exceptions -Wall -I../../include
 LDFLAGS  = -T $(LD_FILE) -L../.. -lstdc++ -lc ../../crt0.o $(LIBGCC)
 
 all: image.elf
