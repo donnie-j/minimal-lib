@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <linker_symbols.h>
 
-static void *_heap = _end;
+extern void *_heap;
 
 int
 brk(void *p)

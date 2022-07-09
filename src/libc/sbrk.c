@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <linker_symbols.h>
 
-static void *_heap = _end;
+void *_heap = _end;
 
 void *
 sbrk(int n)

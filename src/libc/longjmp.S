@@ -1,11 +1,9 @@
 .global __longjmp
 .global _longjmp
-.global longjmp
 .type   __longjmp, @function
 .type   _longjmp, @function
-.type   longjmp,  @function
+__longjmp:
 _longjmp:
-longjmp:
 	mov.l  @r4+, r8
 	mov.l  @r4+, r9
 	mov.l  @r4+, r10
