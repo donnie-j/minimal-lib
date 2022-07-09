@@ -3,7 +3,7 @@ AR              = sh2-elf-ar
 RANLIB          = sh2-elf-ranlib
 CFLAGS          += -mj2 -I../../include -Os -Werror -Wall
 
-OBJS            = abs.o atof.o atol.o bcmp.o bcopy.o bzero.o ctype_.o \
+OBJS            = abs.o atof.o atol.o bcmp.o bcopy.o bzero.o ctype_.o atexit.o \
                   fabs.o isinf.o isinff.o isnan.o isnanf.o memccpy.o \
                   memchr.o memcmp.o memcpy.o memset.o rand.o brk.o sbrk.o malloc.o \
                   sleep.o strcasecmp.o strcat.o strchr.o strcmp.o strcpy.o \

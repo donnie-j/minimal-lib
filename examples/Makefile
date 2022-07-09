@@ -3,10 +3,12 @@ all:
 	make -C cxx
 	make -C setjmp
 	make -C exit_abort
+	make -C atexit
 
 clean:
 	make -C calc clean
 	make -C cxx clean
 	make -C setjmp clean
 	make -C exit_abort clean
+	make -C atexit clean
 
