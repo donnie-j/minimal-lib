@@ -10,6 +10,7 @@ ___setjmp:
 __setjmp:
 _setjmp:
 setjmp:
+	add   #36, r4
 	sts.l  pr,   @-r4
 	mov.l  r15,  @-r4
 	mov.l  r14,  @-r4
@@ -20,4 +21,4 @@ setjmp:
 	mov.l  r9,   @-r4
 	mov.l  r8,   @-r4
 	rts
-	 mov  #0, r0
+	mov  #0, r0
