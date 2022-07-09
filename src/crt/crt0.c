@@ -11,11 +11,13 @@ void _start()
    unsigned long *ram;
 
    while (1) {
+EXPORT_LABEL(abort);
       for (ram=_sdata, rom=_sidata ; ram<_edata ; ram++, rom++) *ram = *rom;
       for (                        ; ram<_ebss  ; ram++       ) *ram = 0;
 
       for (rom=_sctors             ; rom<_ectors;        rom++) ((void (*)())*rom)();
       main(0, (void *)0);
+EXPORT_LABEL(exit);
       for (                        ; rom<_edtors;        rom++) ((void (*)())*rom)();
    }
 }

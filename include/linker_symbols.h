@@ -23,4 +23,6 @@ extern unsigned long _sstack[];
 extern unsigned long _edata[];
 extern unsigned long _estack[];
 
+#define EXPORT_LABEL(X) asm(".global __"#X"; __"#X": .weak _"#X"; .set _"#X",__"#X)
+
 #endif /* __LINKER_SYMBOLS__ */
