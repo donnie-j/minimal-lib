@@ -3,7 +3,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "lcd-drv.h"
+#include "rpn.h"
 
+#if 0
 static char * keys[] = {
 /*        0       1       2       3        4     5     6       7 */
 /* 00 */ "",     "SUM+", "STO",  "",      "UP", "DN", "SHFT", "",
@@ -12,7 +14,7 @@ static char * keys[] = {
 /* 18 */ "",     "LOG",  "SIN",  "+/-",   "8",  "5",  "2",    ".",
 /* 20 */ "",     "LN",   "COS",  "E",     "9",  "6",  "3",    "R/S",
 /* 28 */ "",     "XEQ",  "TAN",  "BS",    "/",  "*",  "-",    "+" };
-
+#endif
 static char key_map[] = {
 /*        0    1    2    3    4    5    6    7 */
 /* 00 */ '_', 'a', 'm', '_', 'u', 'i', '~', '_',
@@ -28,6 +30,7 @@ int
 main (int argc, char *argv[])
 {
   char buf[64];
+  fp_comp_t d = zero_fp;
   int i, k, ch;
   int s = 0;
   int nk = 0;
@@ -39,21 +42,19 @@ main (int argc, char *argv[])
   sleep(2);
 
   while (1) {
-    sprintf(buf, "[%c]%03d Key wait      ", s?'S':' ', nk++);
-    lcd_loc(0,1); lcd_puts(buf);
     key_wait(1);
     k = key();
     ch = key_map[k];
     if (ch == '~') {
       s ^= 1;
+      lcd_loc(0,0); lcd_puts(s?"S":" ");
       key_wait(0);
       continue;
     }
     if (s) ch = toupper(ch);
     s = 0;
  
-    sprintf(buf, "Got [%c] for %s      ", ch, keys[k]);
-    lcd_loc(0,1); lcd_puts(buf);
+    d = key_process(d, ch);
 
     key_wait(0);
   }
