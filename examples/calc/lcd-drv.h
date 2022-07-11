@@ -20,6 +20,4 @@ void lcd_data(unsigned int v);
 void lcd_inst(unsigned int v);
 void lcd_loc(unsigned int x, unsigned int y);
 void lcd_puts(const char *s);
-int lcd_debug(int y, const char *m);
-int ldprintf(int y, const char *fmt, ...);
 #endif /* __LCD_DRV_H__ */ 
