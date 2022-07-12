@@ -24,30 +24,21 @@ static char key_map[] = {
 /* 20 */ '_', 'l', 'c', 'e', '9', '6', '3', '\\',
 /* 28 */ '_', 'x', 't', 'b', '/', '*', '-', '+' };
 
-extern char version_string[];
-
 int
 main (int argc, char *argv[])
 {
-  char buf[64];
   fp_comp_t d = zero_fp;
-  int i, k, ch;
+  int k, ch;
   int s = 0;
-  int nk = 0;
-  unsigned long *p;
 
-  lcd_loc(0, 1);
-  lcd_puts(version_string);
-
-  sleep(2);
-
+  d = key_process(d, '0');
   while (1) {
+    lcd_puts(21, 0, s?"S":" ");
     key_wait(1);
     k = key();
     ch = key_map[k];
     if (ch == '~') {
       s ^= 1;
-      lcd_loc(0,0); lcd_puts(s?"S":" ");
       key_wait(0);
       continue;
     }

@@ -1,7 +1,7 @@
 #ifndef __RPN_H__
 #define __RPN_H__
 
-#define STACK_LEN 4
+#define STACK_LEN 32
 
 typedef struct _val {
    int s;

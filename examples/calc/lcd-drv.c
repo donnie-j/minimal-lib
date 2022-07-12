@@ -1,27 +1,17 @@
 #include <stdio.h>
+#include <string.h>
 #include "lcd-drv.h"
 #include "font5x7.h"
 
-static int ffsl(long i) { return i ? __builtin_ctzl(i) + 1 : 0; }
 extern char *_strptr;
-void
-key_precharge()
-{
-  volatile int i;
 
-  KEYPORT = KEY_NONE;
-  for (i=0; i<3; i++) {}
-  KEYPORT = KEY_PRECHARGE_ALL;
-  for (i=0; i<3; i++) {}
-}
- 
 int
 key_wait(int h)
 {
   volatile int i;
   int res;
 
-  key_precharge();
+  KEYPORT = KEY_PRECHARGE_ALL;
   while (1) {
     KEYPORT = KEY_IDLE;
     for (i=0; i<12000; i++) {;} /* about 20ms */
@@ -44,7 +34,7 @@ key()
   volatile int i;
   int x, res;
 
-  key_precharge();
+  KEYPORT = KEY_PRECHARGE_ALL;
   for (x=0; x<7; x++) {
     KEYPORT = KEY_NONE ^ (1<<x);
     for (i=0; i<120; i++) {;}
@@ -81,12 +71,13 @@ lcd_loc(unsigned int x, unsigned int y)
 }
 
 void
-lcd_puts(const char *s)
+lcd_puts(unsigned int x, unsigned int y, const char *s)
 {
   int i, j;
   unsigned char v[4];
   unsigned int *l = (void *)v;
 
+  lcd_loc(x,y);
   i = 0;
   for (;*s;s++) {
     for (j=0; j<6; j++) {
@@ -101,19 +92,24 @@ lcd_puts(const char *s)
   lcd_data(*l);
 }
 
+void
+lcd_clr(unsigned int y)
+{
+  int i;
+  lcd_loc(0, y);
+  for (i=0; i<132; i++) lcd_data(0);
+}
+
 __attribute__ ((constructor))
 void
 lcd_init()
 {
-  volatile int i,j;
+  volatile int i;
 
-  key_precharge();
+  KEYPORT = KEY_PRECHARGE_ALL;
 
   for (i=0; i<60000; i++) {}
   for (i=0; i<sizeof(lcd_init_data); i++) lcd_inst(lcd_init_data[i]);
 
-  for (i=0; i<4; i++) {
-    lcd_loc(0, i); lcd_puts ("");
-    for (j=0; j<132; j++) lcd_data(0);
-  }
+  for (i=0; i<4; i++) lcd_clr(i);
 }

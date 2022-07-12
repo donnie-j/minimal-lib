@@ -42,3 +42,4 @@ char    *strtok_r (char *, const char *, char **);
 size_t  strcspn (const char *, const char *);
 size_t  strspn (const char *, const char *);
 
+int ffsl(long int n);

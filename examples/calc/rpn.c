@@ -49,23 +49,51 @@ comp(fp_comp_t v)
    return ret;
 }
 
-void
-print_decomp(fp_comp_t d, int f, int e)
+static char *
+itoa(char *p, unsigned int n, int d)
 {
-   char buf[64];
+   int i=1;
+   unsigned int v;
 
-   if (e)      sprintf(buf, "%c%d.%.*de%+d\n", d.s>0 ? ' ':'-', d.i, d.p, d.f, d.e);
-   else if (f) sprintf(buf, "%c%d.%.*d\n",     d.s>0 ? ' ':'-', d.i, d.p, d.f     );
-   else        sprintf(buf, "%c%d\n",          d.s>0 ? ' ':'-', d.i               );
-   lcd_loc(0,2); lcd_puts(buf); lcd_puts("           ");
+   if (!d) return p;
+   while (--d)       i*=10;
+   while (i*10 <= n) i*=10;
+   while (i) {
+      v = n/i;
+      *(p++) = '0'+v;
+      n -= v*i;
+      i /= 10;
+   }
+   return p;
+}
+
+char *
+print_decomp(char *buf, fp_comp_t d, int f, int e)
+{
+   char *p = buf;
+   *(p++) = d.s>0 ? ' ':'-';
+   p      = itoa(p, d.i, 1);
+   if (f || e) {
+      *(p++) = '.';
+      p      = itoa(p, d.f, d.p);
+      if (e) {
+         *(p++) = 'e';
+         *(p++) = d.e<0 ? '-':'+';
+         p      = itoa(p, abs(d.e), 1);
+      }
+   }
+   while(p<buf+16) *(p++) = ' ';
+   *p = 0;
+   return buf;
 }
 
 fp_comp_t
 key_edit(fp_comp_t d, char in)
 {
+   d.flags &=7;
+
    switch (d.flags) {
    case 0:
-   case 10:
       d = zero_fp;
       d.flags++;
       if (in == 'e') d.i=1;
@@ -119,67 +147,50 @@ pop()
 fp_comp_t
 key_process(fp_comp_t d, char in)
 {
+   char buf[32];
    double x = 0.0;
    double y = 0.0;
+   int i;
 
-   if (strchr("+-*/wvqQsScCtT d", in)) {
-      if (d.flags && d.flags != 10) push(comp(d));
-      x = pop();
-   }
-   if (strchr("+-*/w"           , in)) y = pop();
-   if (strchr("+-*/wvqQsScCtTD" , in)) {
-      d.flags = 0;
+   x = pop();
+   if (strchr(   "+-*/wvqQsScCtTDdz" , in)) {
+      if (strchr("+-*/wd"            , in)) y = pop();
       switch (in) {
       case '+': x = y + x; break;
       case '-': x = y - x; break;
       case '*': x = y * x; break;
+      case 't': y = sin(x); x = cos(x);
       case '/': x = y     / (x ? x : 1e-300); break; // avoid div by zero
       case 'w': push(x); x = y; break;
       case 'v': x = (1.0) / (x ? x : 1e-300); break; // avoid div by zero
-#if 0
       case 'q': x = sqrt(x); break;
       case 'Q': x = x*x; break;
       case 's': x =  sin(x); break;
       case 'S': x = asin(x); break;
       case 'c': x =  cos(x); break;
       case 'C': x = acos(x); break;
-      case 't': x =  tan(x); break;
+      // case 't': x =  tan(x); break;
       case 'T': x = atan(x); break;
-#endif
-      case 'D': x = M_PI; break;
+      case 'D': push(x); x = M_PI; break;
+      case 'z': push(x); break;
+      case 'd': x = y; break;
       }
-      push(x); 
-   } else if (in=='z') {
-       if (!d.flags) d=decomp(stack[sp], 1);
-       push(comp(d));
-       d.flags = 10;
+      d=decomp(x,1);
+      d.flags = 0x10;
+      push(x);
    } else {
+       if (d.flags & 0x10) push(x);
        d = key_edit(d, in);
+       push(comp(d));
    }
 
-   if (!d.flags ) print_decomp(decomp(stack[sp], 1), 1, 1);
-   if ( d.flags ) print_decomp(d, d.flags == 2, d.flags == 3 || d.flags == 7);
+   for (i=3; i; i--) {
+      if (sp+i < STACK_LEN) lcd_puts(0, 3-i, print_decomp(buf, decomp(stack[sp+i], 1), 1, 1));
+      else                  lcd_clr(3-i);
+   }
+
+   if (!(d.flags & 7)) lcd_puts(0, 3, print_decomp(buf, decomp(stack[sp], 1), 1, 1));
+   else                lcd_puts(0, 3, print_decomp(buf, d, d.flags == 2, d.flags == 3 ));
 
    return d;
 }
-#if 0
-int
-main (int argc, char *argv[])
-{
-   fp_comp_t d = zero_fp;
-   char *p;
-   int i;
-   int a=1;
-
-   if (argc < 2) exit(0);
-
-   p=argv[a++];
-   while (*p) {
-      d = key_process(d, *p);
-      if (!*(++p) && a<argc) p = argv[a++];
-   }
-   for (i=STACK_LEN; i>sp; ) print_decomp(decomp(stack[--i], 1), 1, 1);
-
-   return 0;
-}
-#endif
