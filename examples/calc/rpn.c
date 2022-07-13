@@ -17,13 +17,15 @@ decomp(double v, int eng)
    unsigned int t;
    unsigned int m=100000;
 
+   if (!v) return zero_fp;
+
    d.s = v>=0 ? 1 : -1;
      v = v> 0 ? v : -v;
 
    /* extract 6 significant digits */
    d.e = d.p = 5;
-   while (v < m   && v) { v *= 10; d.e--; }
-   while (v>= 10*m    ) { v /= 10; d.e++; }
+   while (v < m   ) { v *= 10; d.e--; }
+   while (v>= 10*m) { v /= 10; d.e++; }
 
    /* engineering mode exp adjust n, u, m, k, M... */
    if (eng) while (d.e%3) { m /= 10; d.e--; d.p--; }
@@ -78,7 +80,7 @@ print_decomp(char *buf, fp_comp_t d, int f, int e)
       p      = itoa(p, d.f, d.p);
       if (e) {
          *(p++) = 'e';
-         *(p++) = d.e<0 ? '-':'+';
+         *(p++) = (d.e<0 || d.flags & 4) ? '-':'+';
          p      = itoa(p, abs(d.e), 1);
       }
    }
@@ -91,6 +93,7 @@ fp_comp_t
 key_edit(fp_comp_t d, char in)
 {
    d.flags &=7;
+   if (d.e<0) { d.e = -d.e; d.flags ^= 4; }
 
    switch (d.flags) {
    case 0:
@@ -117,11 +120,8 @@ key_edit(fp_comp_t d, char in)
    case 3:
    case 7:
       if (isdigit(in)) { d.e = d.e*10 + in-'0'; }
-      if (in == 'n') {
-         if (!d.e) d.flags ^= 4;
-         d.e = -d.e;
-      }
-      if (d.e && d.flags & 4) { d.e = -d.e; d.flags &= 4; }
+      if (in == 'n') d.flags ^= 4;
+      if (d.e && d.flags & 4) { d.e = -d.e; d.flags &= ~4; }
       if (in == 'b') {
          if (!d.e) d.flags = 2;
          d.e /= 10;
@@ -190,7 +190,7 @@ key_process(fp_comp_t d, char in)
    }
 
    if (!(d.flags & 7)) lcd_puts(0, 3, print_decomp(buf, decomp(stack[sp], 1), 1, 1));
-   else                lcd_puts(0, 3, print_decomp(buf, d, d.flags == 2, d.flags == 3 ));
+   else                lcd_puts(0, 3, print_decomp(buf, d, d.flags == 2, (d.flags&3) == 3 ));
 
    return d;
 }
