@@ -27,10 +27,14 @@ decomp(double v, int eng)
    while (v < m   ) { v *= 10; d.e--; }
    while (v>= 10*m) { v /= 10; d.e++; }
 
+   /* round */
+   v += 0.5;
+   while (v>= 10*m) { v /= 10; d.e++; }
+
    /* engineering mode exp adjust n, u, m, k, M... */
    if (eng) while (d.e%3) { m /= 10; d.e--; d.p--; }
 
-   t   = v+0.5;
+   t   = v;
    d.i  = t/m;
    d.f = t - (d.i)*m;
    d.flags = 0;
