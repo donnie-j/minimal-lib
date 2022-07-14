@@ -14,5 +14,7 @@ typedef struct _val {
 extern struct _val zero_fp;
 
 fp_comp_t key_process(fp_comp_t d, char in);
+void push (double v);
+double pop();
 
 #endif

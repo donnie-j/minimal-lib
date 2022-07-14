@@ -19,8 +19,8 @@ decomp(double v, int eng)
 
    if (!v) return zero_fp;
 
-   d.s = v>=0 ? 1 : -1;
-     v = v> 0 ? v : -v;
+   d.s = v>=0.0 ? 1 : -1;
+     v = v>=0.0 ? v : -v;
 
    /* extract 6 significant digits */
    d.e = d.p = 5;
@@ -33,6 +33,7 @@ decomp(double v, int eng)
    t   = v+0.5;
    d.i  = t/m;
    d.f = t - (d.i)*m;
+   d.flags = 0;
 
    return d;
 }
@@ -95,7 +96,7 @@ key_edit(fp_comp_t d, char in)
    d.flags &=7;
    if (d.e<0) { d.e = -d.e; d.flags ^= 4; }
 
-   switch (d.flags) {
+   switch (d.flags&3) {
    case 0:
       d = zero_fp;
       d.flags++;
@@ -118,16 +119,16 @@ key_edit(fp_comp_t d, char in)
       }
       break;
    case 3:
-   case 7:
       if (isdigit(in)) { d.e = d.e*10 + in-'0'; }
       if (in == 'n') d.flags ^= 4;
-      if (d.e && d.flags & 4) { d.e = -d.e; d.flags &= ~4; }
       if (in == 'b') {
          if (!d.e) d.flags = 2;
          d.e /= 10;
       }
       break;
    }
+   if (d.e && d.flags & 4) { d.e = -d.e; d.flags &= ~4; }
+
    return d;
 }
 
