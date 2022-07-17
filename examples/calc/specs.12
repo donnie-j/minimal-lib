@@ -1,0 +1,11 @@
+*startfile: ../../crt0.o
+
+*endfile:
+
+%{mcu=*:--script=%*/memory.ld}
+
+%rename cc1_options cc1_options_gcc
+
+*cc1_options:
+%{mcu=*:-DMCU_%*} %(cc1_optons_gcc)
+
