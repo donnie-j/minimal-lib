@@ -1,11 +1,12 @@
-*startfile: ../../crt0.o
+*startfile:
+../../crt0.o
 
 *endfile:
 
-%{mcu=*:--script=%*/memory.ld}
-
-%rename cc1_options cc1_options_gcc
 
 *cc1_options:
-%{mcu=*:-DMCU_%*} %(cc1_optons_gcc)
+%{pg:%{fomit-frame-pointer:%e-pg and -fomit-frame-pointer are incompatible}} %{!iplugindir*:%{fplugin*:%:find-plugindir()}} %1 %{!Q:-quiet} %{!dumpbase:-dumpbase %B} %{d*} %{m*:%{mcu=*:-DMCU=%*} %<mcu* %{m*}} %{aux-info*} %{fcompare-debug-second:%:compare-debug-auxbase-opt(%b)}  %{!fcompare-debug-second:%{c|S:%{o*:-auxbase-strip %*}%{!o*:-auxbase %b}}}%{!c:%{!S:-auxbase %b}}  %{g*} %{O*} %{W*&pedantic*} %{w} %{std*&ansi&trigraphs} %{v:-version} %{pg:-p} %{p} %{f*} %{undef} %{Qn:-fno-ident} %{Qy:} %{-help:--help} %{-target-help:--target-help} %{-version:--version} %{-help=*:--help=%*} %{!fsyntax-only:%{S:%W{o*}%{!o*:-o %b.s}}} %{fsyntax-only:-o %j} %{-param*} %{coverage:-fprofile-arcs -ftest-coverage} %{fprofile-arcs|fprofile-generate*|coverage:   %{!fprofile-update=single:     %{pthread:-fprofile-update=prefer-atomic}}}
+
+*link:
+-m %(link_emul_prefix)%{!m1:%{!m2:%{!m3*:%{!m4*:%(link_default_cpu_emul)}}}}%(subtarget_link_emul_suffix) %{mrelax:-relax} %(subtarget_link_spec) %{mcu=*:--script=%*/memory.ld}
 
