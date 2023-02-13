@@ -154,7 +154,7 @@ key_process(fp_comp_t d, char in)
 {
    char buf[32];
    double x = 0.0;
-   double y = 0.0;
+   double y = 1.0; // 1/x
    int i;
 
    x = pop();
@@ -165,9 +165,9 @@ key_process(fp_comp_t d, char in)
       case '-': x = y - x; break;
       case '*': x = y * x; break;
       case 't': y = sin(x); x = cos(x);
+      case 'v':
       case '/': x = y     / (x ? x : 1e-300); break; // avoid div by zero
       case 'w': push(x); x = y; break;
-      case 'v': x = (1.0) / (x ? x : 1e-300); break; // avoid div by zero
       case 'q': x = sqrt(x); break;
       case 'Q': x = x*x; break;
       case 's': x =  sin(x); break;
