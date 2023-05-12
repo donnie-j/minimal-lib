@@ -3,14 +3,12 @@ AR              = sh2-elf-ar
 RANLIB          = sh2-elf-ranlib
 CFLAGS          += -I../../include -Os -Werror -Wall -Wno-error=attributes
 
-OBJS            = crt0.o
+OBJS            = crt0.o crt1.o
 
-all:            ../../crt0.o
-
-../../crt0.o:	${OBJS}
-		cp $< $@
+all:	${OBJS}
+		cp ${OBJS} ../../
 
 install:	all
 
 clean:
-		rm -f ../../crt0.o *.o *~ tags
+		rm -f ../../crt?.o *.o *~ tags
